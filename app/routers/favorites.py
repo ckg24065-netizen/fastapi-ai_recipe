@@ -1,26 +1,32 @@
 from fastapi import APIRouter
+from app.schema.recipe import RecipeResponse,RecipeTitleResponse
+from app.schema.favorite import FavoriteCreate,FavoriteResponse
 
 router = APIRouter(
     prefix="/favorites",
     tags=["Favorites"] #Swaggerでのグループ名
 )
 
-@router.get("favorites")
+@router.get("/",response_model=list[RecipeTitleResponse])
 async def favorites():
     """
-    generationで登録されたレシピを一覧表示
-    DBから情報を持ってくる
+    お気に入り閲覧
     """
-    return{"message":"お気に入り登録一覧"}
+    return [
+        {"id":1,"title":"料理名"}
+    ]
 
-@router.get("/favorite{id}")
+@router.post("/",response_model=FavoriteResponse)
 async def recipe():
     """
-    お気に入りのレシピ詳細閲覧ページ
-
+    お気に入り追加
     """
-    return[
-        {"message":"料理名"},
-        {"message":"材料"},
-        {"message":"作り方"},
-    ]
+    return {"id":1,"recipe_id":1,"created_at":"2025-11-20T00:00:00"}
+
+@router.delete("/{id}")
+async def delete(id: int):
+    """
+    お気に入り削除
+    """
+    return {"status":204,"detail":"favorite delete"}
+    
