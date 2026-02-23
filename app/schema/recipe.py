@@ -15,7 +15,9 @@ class RecipeResponse(RecipeBase):
     id: int
     created_at: datetime
 
-#    
 class RecipeTitleResponse(BaseModel):
     id:int
     title:str
+
+class RecipeFromGemini(RecipeBase):
+    pass

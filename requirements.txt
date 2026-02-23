@@ -10,3 +10,9 @@ SQLAlchemy==2.0.46
 
 #ASGIサーバー
 uvicorn==0.40.0
+
+#gemini AI
+google-genai>=0.3,<1.0
+
+#.envファイル読み込み
+python-dotenv==1.2.1
