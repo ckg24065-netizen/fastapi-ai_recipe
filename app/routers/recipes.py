@@ -4,7 +4,6 @@ from app.schema.recipe import RecipeCreate,RecipeResponse,RecipeTitleResponse, R
 from app.services.gemini import gemini
 from app.database import get_db
 from sqlalchemy.orm import Session 
-from sqlalchemy import select, insert
 import os
 
 router = APIRouter(
@@ -56,12 +55,9 @@ async def generation_recipe(recipe:RecipeCreate, db:Session = Depends(get_db)):
 #----料理一覧画面-----
 @router.get("/",response_model=list[RecipeTitleResponse])
 async def history(db:Session = Depends(get_db)):
-    """
-    DBから料理名の一覧を表示
-    """
-    return[
-        {"id":1,"title":"料理名"}
-    ]
+
+    recipe = db.query(Recipe.id, Recipe.title).all()
+    return recipe
 
 #----料理詳細ページ----
 @router.get("/recipe/{id}",response_model=RecipeResponse)
