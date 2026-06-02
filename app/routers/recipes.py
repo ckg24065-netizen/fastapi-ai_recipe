@@ -1,77 +1,206 @@
 from fastapi import APIRouter, Depends
+from fastapi import Request, Form
+from fastapi.responses import (HTMLResponse,
+                               RedirectResponse)
+from fastapi.templating import Jinja2Templates
 from app.models.recipe import Recipe
-from app.schema.recipe import RecipeCreate,RecipeResponse,RecipeTitleResponse, RecipeFromGemini
+from app.models.favorite import Favorite
+from app.schema.recipe import (RecipeTitleResponse,
+                               RecipeFromGemini,
+                               Recipeuserinput,
+                               Recipedetail)
 from app.services.gemini import gemini
 from app.database import get_db
 from sqlalchemy.orm import Session 
-import os
+from typing import Optional
 
 router = APIRouter(
     prefix="/recipes",
     tags=["Recipes"] #Swaggerでのグループ名
 )
-print(os.getenv("GOOGLE_API_KEY"))
-#-----------------------
-#レシピ生成に対しての動き
-#-----------------------
 
-#----好みや材料入力ページの動き---
-@router.post("/generate")
-async def create_recipe(recipe: RecipeCreate, db:Session = Depends(get_db)):
+templates = Jinja2Templates(directory="app/templates")
 
-    result = await gemini(recipe.material)
+#-------------------
+#--- ログイン機能 ---
+#-------------------
+@router.get("/login")
+async def login_top(request:Request):
+    return templates.TemplateResponse(
+        "login.html",
+        {"request":request}
+    )
+#ログイン判断
+@router.post("/login-after")
+async def login(
+    request:Request,
+    user_name: str = Form(...),
+    password: str = Form(...),):
+
+    users={
+        
+        "nozomi": "1012",
+        "airi": "0416",
+        "rui": "0601",
+        "rutonn": "0817",
+        "guest" : "0000"
+    }
     
-    for data in result["recipes"]:
+    if user_name in users:
+        if users[user_name] == password:
+            
+            request.session["user"] = user_name
+            return RedirectResponse(url="/recipes/top",status_code=303)
+            
+        else:
+            return templates.TemplateResponse(
+                "login.html",
+                {"request":request,
+                 "message":"パスワードが違います",
+                 "username":user_name}
+            )
+    else:
+        return templates.TemplateResponse(
+            "login.html",
+            {"request":request,
+             "message":"ユーザーネームが違います",
+             "username":user_name}
+        )
+#--- ログアウト ---
+@router.get("/logout")
+async def logout(request:Request):
+    request.session.clear()
+    return RedirectResponse("/recipes/login")
+
+#----- トップページ -----
+@router.get("/top")
+async def top(request:Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request,
+         "user":user}
+    )
+#--- ユーザー入力 ---       
+@router.get("/create", response_class=HTMLResponse)
+async def create(request: Request):
+    
+    return templates.TemplateResponse(
+        "select.html",
+        {"request": request}
+    )
+
+#-------------------------------
+#---- レシピ生成に対しての動き ---
+#-------------------------------
+
+#--- 入力後のローディング ---
+@router.post("/loading")
+async def loading(
+    request: Request,
+    category: str = Form(...),
+    genre: str = Form(...),
+    taste: Optional[str] = Form(None),
+    volume: Optional[str] = Form(None),
+    material: str = Form(...)):
+    
+    user = request.session.get("user")
+    
+    if user is None:
+        return RedirectResponse("/recipes/login", status_code=302)
+    
+    return templates.TemplateResponse(
+        "loading.html",
+        {"request": request,
+         "category":category,
+         "genre":genre,
+         "taste":taste,
+         "volume":volume,
+         "material":material}
+    ) 
+
+#---- 好みや材料入力 ---
+@router.post("/generate", response_model=list[Recipeuserinput])
+async def create_recipe(
+    request:Request,
+    db:Session = Depends(get_db),
+    category: str = Form(...),
+    genre: str = Form(...),
+    taste: Optional[str] = Form(None),
+    volume: Optional[str] = Form(None),
+    material: str = Form(...)):
+    
+    vlidated = Recipeuserinput(
+    category=category,
+    genre=genre,
+    taste=taste,
+    volume=volume,
+    material=material
+    )
+    recipes = await gemini(vlidated)
+    user = request.session.get("user")
+    
+    if recipes is None:
+        
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request,
+             "category":category,
+             "genre":genre,
+             "taste":taste,
+             "volume":volume,
+             "material":material}
+        )
+    
+    for data in recipes["recipes"]:
         validated = RecipeFromGemini(**data)
 
-        new_recipe = Recipe(**validated.dict())
+        new_recipe = Recipe(**validated.dict(),user=user)
         
-    db.add(new_recipe)
+        db.add(new_recipe)
     db.commit()
     db.refresh(new_recipe)
-    return new_recipe
-
-#----レシピ生成4つ-----下記のapiが不必要だと判断
-"""
-@router.post("/generate",response_model=list[RecipeResponse])
-async def generation_recipe(recipe:RecipeCreate, db:Session = Depends(get_db)):
+    return templates.TemplateResponse(
+        "generate.html",
+        {"request": request,
+        "recipe": new_recipe}
+        
+    )
     
-    
-    db.add(generate_recipe)
-    db.commit()
-    db.refresh()
-    return[ 
-        {"id":1,"title": "料理名","material": "材料","recipe_text": "材料","genre": "主食","category": "和食","created_at": "2025-11-20T00:00:00"},
-        {"id":2,"title": "料理名","material": "材料","recipe_text": "材料","genre": "主食","category": "和食","created_at": "2025-11-20T00:00:00"},
-        {"id":3,"title": "料理名","material": "材料","recipe_text": "材料","genre": "主食","category": "和食","created_at": "2025-11-20T00:00:00"},
-        {"id":4,"title": "料理名","material": "材料","recipe_text": "材料","genre": "主食","category": "和食","created_at": "2025-11-20T00:00:00"},
-    ]
-"""
-
-#-----------------
-#履歴に対しての動き
-#-----------------
+#--------------------------
+#---- 履歴に対しての動き ----
+#--------------------------
 
 #----料理一覧画面-----
-@router.get("/",response_model=list[RecipeTitleResponse])
-async def history(db:Session = Depends(get_db)):
+@router.get("/history",response_model=list[RecipeTitleResponse])
+async def history(request:Request,db:Session = Depends(get_db),):
+    user = request.session.get("user")
 
-    recipe = db.query(Recipe.id, Recipe.title).all()
-    return recipe
+    recipes = db.query(Recipe.id,
+                      Recipe.title,
+                      Recipe.user).filter(Recipe.user == user).all()
+    return templates.TemplateResponse(
+        "history.html",
+        {"request": request,
+         "recipes":recipes,
+         "user":user}
+    )
 
 #----料理詳細ページ----
-@router.get("/recipe/{id}",response_model=RecipeResponse)
-async def recipe(id:int, db:Session = Depends(get_db)):
-    """
-    履歴のレシピ詳細
+@router.get("/recipe/{id}",response_model=list[Recipedetail])
+async def recipe(request:Request,id:int, db:Session = Depends(get_db)):
+    user = request.session.get("user")
+    
+    recipe = db.query(Recipe).filter(Recipe.id == id).first()
 
-    """
-    return {
-        "id": 1,
-        "title": "料理名",
-        "material": "材料",
-        "recipe_text": "材料",
-        "genre": "主食",
-        "category": "和食",
-        "created_at": "2025-11-20T00:00:00",
-    }
+    favorite = db.query(Favorite.recipe_id).filter(Favorite.recipe_id == id).first()
+        
+    is_favorites = favorite is not None
+    
+    return templates.TemplateResponse (
+        "detail.html",
+        {"request":request,
+         "recipe":recipe,
+         "is_favorites":is_favorites,
+         "user":user}
+    )

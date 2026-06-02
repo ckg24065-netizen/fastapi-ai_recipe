@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>履歴</h1>
+
+{% for recipe in recipes %}
+
+<a href="recipe/{{ recipe.id }}">
+<div class="card">
+    <div class="card-body">
+        ・{{ recipe.title }}
+    </div>
+</div>
+
+</a>
+
+<br>
+
+{% endfor %}
+
+
+{% endblock %}

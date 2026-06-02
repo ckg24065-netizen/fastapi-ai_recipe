@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div class="card-body p-4 p-md-5">
+
+        <!-- タイトル -->
+        <div class="text-center mb-5">
+
+            <div class="mb-3 fs-1">
+                🍳
+            </div>
+
+            <h1 class="display-5 fw-bold">
+                AIがレシピを作成しました
+            </h1>
+        </div>
+
+        <!-- レシピ名 -->
+        <div class="mb-5">
+
+            <h2 class="h4 border-bottom pb-2 mb-3">
+                料理名
+            </h2>
+
+            <p class="fs-3 fw-semibold">
+                {{ recipe.title }}
+            </p>
+
+        </div>
+
+        <!-- 材料 -->
+        <div class="mb-5">
+
+            <h2 class="h4 border-bottom pb-2 mb-3">
+                材料
+            </h2>
+
+            <div class="bg-light rounded-3 p-3">
+                <p class="mb-0" style="white-space: pre-line;">
+                    {{ recipe.material }}
+                </p>
+            </div>
+
+        </div>
+
+        <!-- 作り方 -->
+        <div class="mb-4">
+
+            <h2 class="h4 border-bottom pb-2 mb-3">
+                作り方
+            </h2>
+
+            <div class="bg-light rounded-3 p-3">
+                <p class="mb-0" style="white-space: pre-line;">
+                    {{ recipe.recipe_text }}
+                </p>
+            </div>
+
+        </div>
+
+        <!-- ボタン -->
+        <div class="d-flex gap-3 justify-content-center mt-5">
+
+            <a href="/recipes/top" class="btn btn-primary btn-lg">
+                トップへ戻る
+            </a>
+
+            <a href="/recipes/history" class="btn btn-outline-secondary btn-lg">
+                履歴を見る
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

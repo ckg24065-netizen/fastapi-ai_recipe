@@ -43,16 +43,26 @@ prompt_text="""あなたはプロの料理研究家です。
 必ず上記形式に厳密に従うこと。
 """
 
-async def gemini(user_input:str):
-    print(user_input)
-    full_prompt = prompt_text + user_input
-    response = client.models.generate_content(
-        model = "gemini-2.5-flash",
-        contents = full_prompt,
-    )
-    print(response.text)
-    
-    try:
+async def gemini(user_input:list):
+
+    full_prompt = prompt_text + str(user_input.dict())
+    for loop in range(3):
+      
+      try:
+        response = client.models.generate_content(
+            model = "gemini-2.5-flash",
+            contents = full_prompt,
+        )
+        print(response.text)
         return json.loads(response.text)
-    except:
-        return{"error": "JSON parse error"}
+      
+      except Exception as e:
+        print("エラーが発生しました")
+        print(e)
+    return None
+    
+    
+          
+      
+        
+ 

@@ -16,3 +16,11 @@ google-genai>=0.3,<1.0
 
 #.envファイル読み込み
 python-dotenv==1.2.1
+
+#Form
+python-multipart >= 0.0.22
+
+#暗号化
+itsdangerous==2.2.0
+
+

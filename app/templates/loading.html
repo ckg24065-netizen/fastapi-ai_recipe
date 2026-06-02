@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="spinner-border text-primary"></div>
+    <h1>レシピ作成中...</h1>
+    <p>少々お待ちください</p>
+
+<form id = "generate-form" 
+    action="/recipes/generate"
+    method="post">
+
+    <input type="hidden" name="category" value="{{ category }}">
+    <input type="hidden" name="genre" value="{{ genre }}">
+    <input type="hidden" name="taste" value="{{ taste }}">
+    <input type="hidden" name="volume" value="{{ volume }}">
+    <input type="hidden" name="material" value="{{ material }}">
+    
+
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded",function(){
+        setTimeout(function(){
+            requestAnimationFrame(function(){
+                document.getElementById("generate-form")
+                .submit();
+            });
+        }, 3000);
+    });
+</script>
+
+{% endblock %}

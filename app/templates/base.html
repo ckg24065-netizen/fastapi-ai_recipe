@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Create</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body{
+            background-color: #f8f9fa;
+        }
+
+        header{
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .logo-btn{
+            border: none;
+            background: none;
+        }
+
+        .nav-box{
+            background-color: white;
+            border-radius: 12px;
+            padding: 12px;
+        }
+    </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<body>
+
+<header class="shadow-sm mb-4">
+<nav class="bg-light p-2 d-flex">
+
+     <a href="/recipes/top" class="text-decoration-none">
+        <button class="logo-btn">
+            <h1 class="h3 text-dark m-0 pt-4">🍳 AI Recipe</h1>
+        </button>
+    </a>
+
+    <div class="ms-auto d-flex flex-column align-items-end gap-1">
+
+        <form action="/recipes/logout" method="get">
+                <button class="text-danger rounded px-2 small text-decoration-none">
+                    ログアウト
+                </button>
+            </form>
+        
+        <div class="nav-box d-flex gap-2">
+            
+            <form action="/favorites/" method="get">
+                <button class="btn btn-outline-danger">
+                お気に入り
+                </button>
+            </form>
+
+            <form action="/recipes/history" method="get">
+                <button class="btn btn-primary btn">
+                    履歴
+                </button>
+            </form>
+
+        </div>
+    </div>
+</nav>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+<br><br><br><br><br><br><br>
+
+<footer class="text-center text-secondary py-4 mt-5">
+    @2026 AIレシピ
+</footer>
+
+</body>
+</html>

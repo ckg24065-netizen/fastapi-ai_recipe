@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm border-0 rounded-4">
+
+            <div class="card-body p-4 p-md-5">
+
+                <!-- タイトル -->
+                <div class="text-center mb-5">
+
+                    <div class="fs-1 mb-3">
+                        🍳
+                    </div>
+
+                    <h1 class="fw-bold">
+                        レシピ条件入力
+                    </h1>
+
+                    <p class="text-secondary mt-3">
+                        AIに作ってほしいレシピの条件を入力してください
+                    </p>
+
+                </div>
+
+            <form method="post" action="/recipes/loading">
+
+                    <!-- 主食 or 副菜 -->
+                    <div class="mb-4">
+
+                        <h2 class="h5 mb-3">
+                            主食 or 副菜 <font color="red">（必須）</font>
+                        </h2>
+
+                        <div class="d-flex gap-3 flex-wrap">
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="category"
+                                       value="main"
+                                       id="main"
+                                       required>
+
+                                <label class="form-check-label" for="main">
+                                    主食
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="category"
+                                       value="sab"
+                                       id="sab">
+
+                                <label class="form-check-label" for="sab">
+                                    副菜
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ジャンル -->
+                    <div class="mb-4">
+
+                        <h2 class="h5 mb-3">
+                            料理ジャンル <font color="red">（必須）</font>
+                        </h2>
+
+                        <div class="d-flex gap-3 flex-wrap">
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="genre"
+                                       value="japanes"
+                                       id="japanese"
+                                       required>
+
+                                <label class="form-check-label" for="japanese">
+                                    和食
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="genre"
+                                       value="western"
+                                       id="western">
+
+                                <label class="form-check-label" for="western">
+                                    洋風
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="genre"
+                                       value="chaina"
+                                       id="china">
+
+                                <label class="form-check-label" for="china">
+                                    中華
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="genre"
+                                       value="nonn"
+                                       id="none">
+
+                                <label class="form-check-label" for="none">
+                                    指定なし
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- 味 -->
+                    <div class="mb-4">
+
+                        <h2 class="h5 mb-3">
+                            味の濃さ（任意）
+                        </h2>
+
+                        <div class="d-flex gap-3 flex-wrap">
+
+                            <div class="form-check">
+                                <input class="form-check-input optional-radio"
+                                       type="radio"
+                                       name="taste"
+                                       value="storong"
+                                       id="strong">
+
+                                <label class="form-check-label" for="strong">
+                                    濃い
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input optional-radio"
+                                       type="radio"
+                                       name="taste"
+                                       value="weak"
+                                       id="weak">
+
+                                <label class="form-check-label" for="weak">
+                                    薄い
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input optional-radio"
+                                       type="radio"
+                                       name="taste"
+                                       value="normal"
+                                       id="normal">
+
+                                <label class="form-check-label" for="normal">
+                                    普通
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ボリューム -->
+                    <div class="mb-4">
+
+                        <h2 class="h5 mb-3">
+                            ボリューム感（任意）
+                        </h2>
+
+                        <div class="d-flex gap-3 flex-wrap">
+
+                            <div class="form-check">
+                                <input class="form-check-input optional-radio"
+                                       type="radio"
+                                       name="volume"
+                                       value="big-meal"
+                                       id="big">
+
+                                <label class="form-check-label" for="big">
+                                    ガッツリ
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input optional-radio"
+                                       type="radio"
+                                       name="volume"
+                                       value="light"
+                                       id="light">
+
+                                <label class="form-check-label" for="light">
+                                    あっさり
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- 材料 -->
+                    <div class="mb-5">
+
+                        <h2 class="h5 mb-3">
+                            材料など <font color="red">（必須）</font>
+                        </h2>
+
+                        <textarea
+                            class="form-control"
+                            id="material"
+                            name="material"
+                            rows="5"
+                            required
+                            placeholder="鶏むね肉、卵、玉ねぎ ..."
+                        ></textarea>
+
+                    </div>
+
+                <!-- ボタン -->
+                <div class="d-flex gap-3 justify-content-center">
+
+                    <button type="submit"
+                        class="btn btn-primary btn-lg px-5">
+                        生成する
+                    </button>
+            </form>
+
+                        <form action="/recipes/top" method="get">
+                            <button type="submit"
+                                    class="btn btn-outline-secondary btn-lg">
+                                戻る
+                            </button>
+                        </form>  
+                 </div>
+                         
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    console.log("読み込み成功！")
+    let checkedRadio = null;
+
+    document
+    .querySelectorAll(".optional-radio")
+    .forEach(function(radio){
+
+        radio.addEventListener("click",function(){
+            
+            if(checkedRadio === this){
+
+                this.checked = false;
+                checkedRadio = null;
+            }else{
+
+                checkedRadio = this;
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+
+
+
